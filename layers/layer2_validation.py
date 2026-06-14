@@ -50,7 +50,13 @@ def validate_name(name: str) -> dict:
         - If len(name) > NAME_MAX_LENGTH → return {"valid": False, "error": f"Name must be {NAME_MAX_LENGTH} characters or fewer."}
         - If all checks pass → return {"valid": True, "error": None}
     """
-    pass  # Remove this line when you implement the function
+    if name is None or not isinstance(name, str):
+        return {"valid": False, "error": "Name is required."}
+    if name.strip() == "":
+        return {"valid": False, "error": "Name cannot be blank."}
+    if len(name) > NAME_MAX_LENGTH:
+        return {"valid": False, "error": f"Name must be {NAME_MAX_LENGTH} characters or fewer."}
+    return {"valid": True, "error": None}
 
 
 def validate_text_length(text: str) -> dict:
@@ -69,7 +75,13 @@ def validate_text_length(text: str) -> dict:
         - If len(text) > TEXT_MAX_LENGTH → return {"valid": False, "error": f"Text must be {TEXT_MAX_LENGTH} characters or fewer."}
         - If all checks pass → return {"valid": True, "error": None}
     """
-    pass  # Remove this line when you implement the function
+    if text is None or not isinstance(text, str):
+        return {"valid": False, "error": "Text is required."}
+    if len(text.strip()) < TEXT_MIN_LENGTH:
+        return {"valid": False, "error": f"Text must be at least {TEXT_MIN_LENGTH} characters."}
+    if len(text) > TEXT_MAX_LENGTH:
+        return {"valid": False, "error": f"Text must be {TEXT_MAX_LENGTH} characters or fewer."}
+    return {"valid": True, "error": None}
 
 
 def validate_text_content(text: str) -> dict:
@@ -91,7 +103,11 @@ def validate_text_content(text: str) -> dict:
         - If no forbidden words found:
             return {"valid": True, "error": None, "found_word": None}
     """
-    pass  # Remove this line when you implement the function
+    text_lower = text.lower()
+    for word in FORBIDDEN_WORDS:
+        if word in text_lower:
+            return {"valid": False, "error": f'Text contains a forbidden word: "{word}".', "found_word": word}
+    return {"valid": True, "error": None, "found_word": None}
 
 
 # ─────────────────────────────────────────────
@@ -116,4 +132,16 @@ def validate_entry(name: str, text: str) -> dict:
         - Call validate_text_content(text). If result["valid"] is False, return that result.
         - If everything passed → return {"valid": True, "error": None}
     """
-    pass  # Remove this line when you implement the function
+    name_result = validate_name(name)
+    if name_result["valid"] is False:
+        return name_result
+
+    length_result = validate_text_length(text)
+    if length_result["valid"] is False:
+        return length_result
+
+    content_result = validate_text_content(text)
+    if content_result["valid"] is False:
+        return {"valid": False, "error": content_result["error"]}
+
+    return {"valid": True, "error": None}

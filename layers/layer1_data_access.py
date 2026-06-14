@@ -34,7 +34,8 @@ def _read_database() -> dict:
         - Parse the file contents with json.load()
         - Return the resulting dictionary
     """
-    pass  # Remove this line when you implement the function
+    with open(DB_PATH, "r", encoding="utf-8") as file:
+        return json.load(file)
 
 
 def _write_database(data: dict) -> None:
@@ -48,7 +49,8 @@ def _write_database(data: dict) -> None:
         - Open the file at DB_PATH in write mode with encoding="utf-8"
         - Use json.dump() with indent=2 to write the data
     """
-    pass  # Remove this line when you implement the function
+    with open(DB_PATH, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=2)
 
 
 # ─────────────────────────────────────────────
@@ -57,7 +59,7 @@ def _write_database(data: dict) -> None:
 
 def get_all_entries() -> list:
     """
-    Retrieves all entries from the database.
+    Retrievals all entries from the database.
 
     Returns:
         list: A list of entry dicts, each with keys: id, name, text, created_at.
@@ -66,7 +68,8 @@ def get_all_entries() -> list:
         - Call _read_database() to get the full database dict
         - Return the value at key "entries"
     """
-    pass  # Remove this line when you implement the function
+    db = _read_database()
+    return db["entries"]
 
 
 def get_entry_by_id(entry_id: str) -> dict | None:
@@ -85,7 +88,11 @@ def get_entry_by_id(entry_id: str) -> dict | None:
           whose "id" key matches entry_id
         - Return the entry if found, or None if not found
     """
-    pass  # Remove this line when you implement the function
+    entries = get_all_entries()
+    for entry in entries:
+        if entry["id"] == entry_id:
+            return entry
+    return None
 
 
 def save_entry(entry: dict) -> dict:
@@ -105,7 +112,10 @@ def save_entry(entry: dict) -> dict:
         - Call _write_database() with the updated database
         - Return the saved entry
     """
-    pass  # Remove this line when you implement the function
+    db = _read_database()
+    db["entries"].append(entry)
+    _write_database(db)
+    return entry
 
 
 def delete_entry(entry_id: str) -> bool:
@@ -126,4 +136,14 @@ def delete_entry(entry_id: str) -> bool:
         - Otherwise update db["entries"] with the filtered list,
           call _write_database(), and return True
     """
-    pass  # Remove this line when you implement the function
+    db = _read_database()
+    original_length = len(db["entries"])
+    
+    filtered_entries = [e for e in db["entries"] if e["id"] != entry_id]
+    
+    if len(filtered_entries) == original_length:
+        return False
+        
+    db["entries"] = filtered_entries
+    _write_database(db)
+    return True

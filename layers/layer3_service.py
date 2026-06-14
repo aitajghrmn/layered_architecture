@@ -38,7 +38,9 @@ def _generate_id() -> str:
         - Get a random number: random.randint(1000, 9999)
         - Return a string in the format: f"entry_{timestamp}_{random_number}"
     """
-    pass  # Remove this line when you implement the function
+    timestamp = int(time.time() * 1000)
+    random_number = random.randint(1000, 9999)
+    return f"entry_{timestamp}_{random_number}"
 
 
 # ─────────────────────────────────────────────
@@ -74,7 +76,19 @@ def add_entry(name: str, text: str) -> dict:
 
         4. Return {"success": True, "data": saved_entry}
     """
-    pass  # Remove this line when you implement the function
+    result = validator.validate_entry(name, text)
+    if result["valid"] is False:
+        return {"success": False, "error": result["error"]}
+
+    entry = {
+        "id": _generate_id(),
+        "name": name.strip(),
+        "text": text.strip(),
+        "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    }
+
+    saved_entry = dal.save_entry(entry)
+    return {"success": True, "data": saved_entry}
 
 
 def list_entries() -> dict:
@@ -88,7 +102,8 @@ def list_entries() -> dict:
         - Call dal.get_all_entries()
         - Return {"success": True, "data": entries}
     """
-    pass  # Remove this line when you implement the function
+    entries = dal.get_all_entries()
+    return {"success": True, "data": entries}
 
 
 def get_entry(entry_id: str) -> dict:
@@ -109,7 +124,10 @@ def get_entry(entry_id: str) -> dict:
         - Otherwise:
               return {"success": True, "data": entry}
     """
-    pass  # Remove this line when you implement the function
+    entry = dal.get_entry_by_id(entry_id)
+    if entry is None:
+        return {"success": False, "error": "Entry not found."}
+    return {"success": True, "data": entry}
 
 
 def remove_entry(entry_id: str) -> dict:
@@ -130,4 +148,6 @@ def remove_entry(entry_id: str) -> dict:
         - Otherwise:
               return {"success": True}
     """
-    pass  # Remove this line when you implement the function
+    if dal.delete_entry(entry_id) is False:
+        return {"success": False, "error": "Entry not found."}
+    return {"success": True}

@@ -36,7 +36,12 @@ def _print_entry(entry: dict) -> None:
             print(f"Created at: {entry['created_at']}")
             print("─" * 40)
     """
-    pass  # Remove this line when you implement the function
+    print("─" * 40)
+    print(f"ID:         {entry['id']}")
+    print(f"Name:       {entry['name']}")
+    print(f"Text:       {entry['text']}")
+    print(f"Created at: {entry['created_at']}")
+    print("─" * 40)
 
 
 # ─────────────────────────────────────────────
@@ -60,7 +65,12 @@ def display_add_entry(name: str, text: str) -> None:
               print("✅ Entry added successfully!")
               Call _print_entry(result["data"])
     """
-    pass  # Remove this line when you implement the function
+    result = service.add_entry(name, text)
+    if result["success"] is False:
+        print("❌ Failed to add entry: " + result["error"])
+    else:
+        print("✅ Entry added successfully!")
+        _print_entry(result["data"])
 
 
 def display_all_entries() -> None:
@@ -76,7 +86,13 @@ def display_all_entries() -> None:
               print(f"📋 Found {len(result['data'])} entry/entries:\n")
               Loop over result["data"] and call _print_entry() for each one.
     """
-    pass  # Remove this line when you implement the function
+    result = service.list_entries()
+    if len(result["data"]) == 0:
+        print("📭 No entries found.")
+    else:
+        print(f"📋 Found {len(result['data'])} entry/entries:\n")
+        for entry in result["data"]:
+            _print_entry(entry)
 
 
 def display_entry(entry_id: str) -> None:
@@ -93,7 +109,11 @@ def display_entry(entry_id: str) -> None:
         - Otherwise:
               Call _print_entry(result["data"])
     """
-    pass  # Remove this line when you implement the function
+    result = service.get_entry(entry_id)
+    if result["success"] is False:
+        print("❌ " + result["error"])
+    else:
+        _print_entry(result["data"])
 
 
 def display_remove_entry(entry_id: str) -> None:
@@ -110,4 +130,8 @@ def display_remove_entry(entry_id: str) -> None:
         - Otherwise:
               print("🗑️  Entry deleted successfully.")
     """
-    pass  # Remove this line when you implement the function
+    result = service.remove_entry(entry_id)
+    if result["success"] is False:
+        print("❌ " + result["error"])
+    else:
+        print("🗑️  Entry deleted successfully.")
